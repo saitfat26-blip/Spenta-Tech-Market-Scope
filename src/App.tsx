@@ -26,6 +26,11 @@ import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { GlobalLoadingScreen } from './components/GlobalLoadingScreen';
 import { BreadcrumbNav } from './components/BreadcrumbNav';
 import { OmniSearchModal } from './components/OmniSearchModal';
+import { MilestonesSection } from './components/MilestonesSection';
+import { ValueExchangeSection } from './components/ValueExchangeSection';
+import { ExecutiveFeedbackDrawer } from './components/ExecutiveFeedbackDrawer';
+
+export type GlobalViewMode = 'investor' | 'partner';
 
 export default function App() {
   const [currency, setCurrency] = useState<Currency>('USD');
@@ -35,6 +40,8 @@ export default function App() {
   const [isIntelligenceOpen, setIsIntelligenceOpen] = useState<boolean>(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
   const [isOmniSearchOpen, setIsOmniSearchOpen] = useState<boolean>(false);
+  const [isFeedbackDrawerOpen, setIsFeedbackDrawerOpen] = useState<boolean>(false);
+  const [globalViewMode, setGlobalViewMode] = useState<GlobalViewMode>('investor');
   const [activePersona, setActivePersona] = useState<InvestorPersona | null>(null);
   const [activeScenario, setActiveScenario] = useState<FinancialScenario>('base');
   const [contactInterestArea, setContactInterestArea] = useState<string>('Seed Round SAFE Allocation ($500k @ $4.5M Cap)');
@@ -146,6 +153,9 @@ export default function App() {
         onOpenDataRoom={() => setIsDataRoomOpen(true)}
         onOpenContact={handleOpenContact}
         onOpenIntelligenceDashboard={() => handleOpenIntelligence('base')}
+        globalViewMode={globalViewMode}
+        onGlobalViewModeChange={setGlobalViewMode}
+        onOpenFeedback={() => setIsFeedbackDrawerOpen(true)}
       />
 
       {/* Floating Spatial Sidebar Dock */}
@@ -165,6 +175,7 @@ export default function App() {
           onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
           onOpenDataRoom={() => setIsDataRoomOpen(true)}
           onOpenContact={handleOpenContact}
+          globalViewMode={globalViewMode}
         />
 
         {/* Real-Time Investor News Ticker */}
@@ -178,6 +189,12 @@ export default function App() {
 
         {/* 4. R&D Technology Development Timeline & Gantt Roadmap */}
         <RdRoadmapSection />
+
+        {/* Major Milestones & Strategic Sprints */}
+        <MilestonesSection />
+
+        {/* Value Exchange Model */}
+        <ValueExchangeSection />
 
         {/* 5. Macro Catalyst: Big Tech Hardware Influx */}
         <MarketShiftSection />
@@ -276,6 +293,11 @@ export default function App() {
         onClose={() => setIsOmniSearchOpen(false)}
       />
 
+      {/* Executive Feedback Drawer */}
+      <ExecutiveFeedbackDrawer
+        isOpen={isFeedbackDrawerOpen}
+        onClose={() => setIsFeedbackDrawerOpen(false)}
+      />
     </div>
   );
 }

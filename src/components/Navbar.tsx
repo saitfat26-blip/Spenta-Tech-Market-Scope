@@ -23,6 +23,8 @@ import {
   LineChart
 } from 'lucide-react';
 
+import { GlobalViewMode } from '../App';
+
 interface NavbarProps {
   currency: Currency;
   onCurrencyChange: (c: Currency) => void;
@@ -30,6 +32,9 @@ interface NavbarProps {
   onOpenDataRoom: () => void;
   onOpenContact: (interest?: string) => void;
   onOpenIntelligenceDashboard?: () => void;
+  globalViewMode?: GlobalViewMode;
+  onGlobalViewModeChange?: (mode: GlobalViewMode) => void;
+  onOpenFeedback?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -38,7 +43,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenPitchDeck,
   onOpenDataRoom,
   onOpenContact,
-  onOpenIntelligenceDashboard
+  onOpenIntelligenceDashboard,
+  globalViewMode = 'investor',
+  onGlobalViewModeChange,
+  onOpenFeedback
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -113,6 +121,42 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* High Density Telemetry Status Badges & Action Buttons */}
           <div className="hidden sm:flex items-center gap-2">
+
+            {/* Global View Mode Toggle */}
+            {onGlobalViewModeChange && (
+              <div className="hidden lg:flex items-center bg-slate-900 border border-slate-700 rounded-md p-0.5 mr-2">
+                <button
+                  onClick={() => onGlobalViewModeChange('investor')}
+                  className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all ${
+                    globalViewMode === 'investor' 
+                      ? 'bg-cyan-500/20 text-cyan-400 shadow-sm' 
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  Investor
+                </button>
+                <button
+                  onClick={() => onGlobalViewModeChange('partner')}
+                  className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all ${
+                    globalViewMode === 'partner' 
+                      ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' 
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  Partner
+                </button>
+              </div>
+            )}
+
+            {/* Executive Feedback Toggle */}
+            {onOpenFeedback && (
+              <button
+                onClick={onOpenFeedback}
+                className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-all cursor-pointer mr-2"
+              >
+                <span className="text-[11px]">Leave Feedback</span>
+              </button>
+            )}
 
             {/* Download Full Briefing Button */}
             <button

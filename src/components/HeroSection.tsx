@@ -22,18 +22,22 @@ import {
   Calculator
 } from 'lucide-react';
 
+import { GlobalViewMode } from '../App';
+
 interface HeroSectionProps {
   currency: Currency;
   onOpenPitchDeck: () => void;
   onOpenDataRoom: () => void;
   onOpenContact?: (interest?: string) => void;
+  globalViewMode?: GlobalViewMode;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   currency,
   onOpenPitchDeck,
   onOpenDataRoom,
-  onOpenContact
+  onOpenContact,
+  globalViewMode = 'investor'
 }) => {
   const [activeNavId, setActiveNavId] = useState<string | null>(null);
 
@@ -200,10 +204,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           >
             <div className="space-y-3">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.1]">
-                Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">Immersive Reality Solutions</span> for Enterprise
+                {globalViewMode === 'investor' ? (
+                  <>Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">Immersive Reality Solutions</span> for Enterprise</>
+                ) : (
+                  <>Co-Creating <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-sky-300 to-cyan-400">Next-Gen Industry Vertical</span> Integrations</>
+                )}
               </h1>
               <p className="text-lg sm:text-xl text-slate-300 leading-relaxed font-sans max-w-2xl">
-                Spenta accelerates <strong className="text-white font-semibold">Global Digital Transformation</strong> via our proprietary <strong className="text-white font-semibold">Omni Vertical Fusion Model</strong>. Fusing spatial reality with document intelligence to deliver unmatched client <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-bold font-mono animate-value-pulse shadow-sm shadow-emerald-500/20">450% ROI</span> and expanding <span className="inline-block px-2 py-0.5 rounded-md bg-cyan-950/90 border border-cyan-500/50 text-cyan-300 font-bold font-mono animate-value-pulse shadow-sm shadow-cyan-500/20">32.5%–45% Profit Margins</span> across global enterprise markets.
+                {globalViewMode === 'investor' ? (
+                  <>Spenta accelerates <strong className="text-white font-semibold">Global Digital Transformation</strong> via our proprietary <strong className="text-white font-semibold">Omni Vertical Fusion Model</strong>. Fusing spatial reality with document intelligence to deliver unmatched client <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-bold font-mono animate-value-pulse shadow-sm shadow-emerald-500/20">450% ROI</span> and expanding <span className="inline-block px-2 py-0.5 rounded-md bg-cyan-950/90 border border-cyan-500/50 text-cyan-300 font-bold font-mono animate-value-pulse shadow-sm shadow-cyan-500/20">32.5%–45% Profit Margins</span> across global enterprise markets.</>
+                ) : (
+                  <>Spenta partners with strategic integrators to embed <strong className="text-white font-semibold">Spatial Reality & AI</strong> into existing ecosystems. Our <strong className="text-white font-semibold">Dual-Engine Tech Stack</strong> is built for rapid deployment, allowing partners to unlock massive new revenue streams, reduce time-to-market, and co-own transformative <span className="inline-block px-2 py-0.5 rounded-md bg-indigo-950/90 border border-indigo-500/50 text-indigo-300 font-bold font-mono animate-value-pulse shadow-sm shadow-indigo-500/20">Go-To-Market Channels</span>.</>
+                )}
               </p>
             </div>
 
@@ -211,27 +223,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               
               <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-lg hud-corner hover:border-cyan-500/40 transition-all">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">Financial Projection</div>
+                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">{globalViewMode === 'investor' ? 'Financial Projection' : 'Integration TAM'}</div>
                 <div className="text-2xl font-black font-mono text-white tracking-tight">$667.3B</div>
                 <div className="text-[10px] text-cyan-400 font-mono mt-0.5">2033 Market TAM • 41.1% CAGR</div>
               </div>
 
               <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-lg hud-corner hover:border-emerald-500/40 transition-all">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">Verified Client ROI</div>
-                <div className="text-2xl font-black font-mono text-emerald-400 tracking-tight">450%</div>
-                <div className="text-[10px] text-slate-300 font-mono mt-0.5">Prime Bank PrimeOCR Case Study</div>
+                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">{globalViewMode === 'investor' ? 'Verified Client ROI' : 'Partner Revenue Share'}</div>
+                <div className="text-2xl font-black font-mono text-emerald-400 tracking-tight">{globalViewMode === 'investor' ? '450%' : 'Up to 30%'}</div>
+                <div className="text-[10px] text-slate-300 font-mono mt-0.5">{globalViewMode === 'investor' ? 'Prime Bank PrimeOCR Case Study' : 'Tier-1 Strategic Alliances'}</div>
               </div>
 
               <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-lg hud-corner hover:border-sky-500/40 transition-all">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">Gross Profit Margin</div>
-                <div className="text-2xl font-black font-mono text-sky-300 tracking-tight">32.5% – 45%</div>
-                <div className="text-[10px] text-slate-300 font-mono mt-0.5">Full Cost Absorption</div>
+                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">{globalViewMode === 'investor' ? 'Gross Profit Margin' : 'API Throughput'}</div>
+                <div className="text-2xl font-black font-mono text-sky-300 tracking-tight">{globalViewMode === 'investor' ? '32.5% – 45%' : '10K+ TPS'}</div>
+                <div className="text-[10px] text-slate-300 font-mono mt-0.5">{globalViewMode === 'investor' ? 'Full Cost Absorption' : 'Spanner DB Horizontal Scale'}</div>
               </div>
 
               <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-lg hud-corner hover:border-purple-500/40 transition-all">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">Net Profit Margin</div>
-                <div className="text-2xl font-black font-mono text-purple-300 tracking-tight">13.5% – 25%</div>
-                <div className="text-[10px] text-slate-300 font-mono mt-0.5">Dual-Shore GTM Alpha</div>
+                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">{globalViewMode === 'investor' ? 'Net Profit Margin' : 'Time-to-Market'}</div>
+                <div className="text-2xl font-black font-mono text-purple-300 tracking-tight">{globalViewMode === 'investor' ? '13.5% – 25%' : '2-4 Weeks'}</div>
+                <div className="text-[10px] text-slate-300 font-mono mt-0.5">{globalViewMode === 'investor' ? 'Dual-Shore GTM Alpha' : 'SDK Plug-and-Play Integration'}</div>
               </div>
 
             </div>

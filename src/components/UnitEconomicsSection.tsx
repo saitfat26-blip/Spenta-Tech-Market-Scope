@@ -11,7 +11,10 @@ import {
   Cell,
   ComposedChart,
   Line,
-  Area
+  Area,
+  ScatterChart,
+  Scatter,
+  ZAxis
 } from 'recharts';
 import { FINANCIAL_TIERS } from '../data/mockData';
 import { Currency, FinancialTier, USD_TO_BDT_RATE } from '../types';
@@ -39,7 +42,13 @@ import {
   Volume2,
   VolumeX,
   FileSpreadsheet,
-  Cpu
+  Cpu,
+  Calendar,
+  List,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
+  GitMerge
 } from 'lucide-react';
 
 interface UnitEconomicsSectionProps {
@@ -164,6 +173,26 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
   const [activeAnomaly, setActiveAnomaly] = useState<AnomalyRisk | null>(null);
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
   const [anomalyViewMode, setAnomalyViewMode] = useState<'live' | 'projected'>('live');
+  const [marketAssumption, setMarketAssumption] = useState<'stable' | 'volatile' | 'bearish'>('stable');
+  const [isLogOpen, setIsLogOpen] = useState<boolean>(false);
+  const [selectedHeatmapDate, setSelectedHeatmapDate] = useState<string | null>(null);
+
+  const heatmapData = React.useMemo(() => {
+    return Array.from({ length: 180 }).map((_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (179 - i));
+      return {
+        date: date.toISOString().split('T')[0],
+        intensity: Math.random(),
+      };
+    });
+  }, []);
+
+  const notificationLog = React.useMemo(() => [
+    { id: 1, time: '2026-08-16 09:12', title: 'CAC Outbound Spike', severity: 'high', duration: '1d 4h', mitigated: false },
+    { id: 2, time: '2026-08-12 14:30', title: 'Overhead Drag Detected', severity: 'high', duration: '3d 2h', mitigated: true },
+    { id: 3, time: '2026-08-05 11:45', title: 'Server Compute Cap', severity: 'high', duration: '12h', mitigated: true },
+  ], []);
 
   React.useEffect(() => {
     if (!audioEnabled) return;
@@ -567,7 +596,35 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                 </button>
               </div>
 
+              {/* What-If Simulation Toggle */}
+              {anomalyViewMode === 'projected' && (
+                <div className="flex bg-slate-900 border border-slate-700 rounded-md p-0.5 ml-2">
+                  <select 
+                    value={marketAssumption}
+                    onChange={(e) => setMarketAssumption(e.target.value as any)}
+                    className="bg-transparent text-[10px] font-mono font-bold text-slate-300 outline-none px-1"
+                  >
+                    <option value="stable">Stable Market</option>
+                    <option value="volatile">Volatile Market</option>
+                    <option value="bearish">Bearish Market</option>
+                  </select>
+                </div>
+              )}
+
               <div className="w-px h-4 bg-slate-700"></div>
+
+              <button 
+                onClick={() => setIsLogOpen(!isLogOpen)}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border transition-all text-[10px] font-mono font-bold ${
+                  isLogOpen 
+                    ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400' 
+                    : 'bg-slate-900 border-slate-700 text-slate-500 hover:text-slate-300 hover:bg-slate-800'
+                }`}
+                title="Toggle Notification Log"
+              >
+                <List className="w-3.5 h-3.5" />
+                Alert Log
+              </button>
 
               <button 
                 onClick={() => setAudioEnabled(!audioEnabled)}
@@ -591,9 +648,10 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-700">
             {SPARKLINE_DATA[scenario].map(anomaly => {
-              // Adjust data for projected view based on scenario
+              // Adjust data for projected view based on scenario and market assumption
+              const assumptionMultiplier = marketAssumption === 'volatile' ? 1.2 : marketAssumption === 'bearish' ? 1.5 : 1.0;
               const sparklineData = anomalyViewMode === 'projected' 
-                ? anomaly.sparkline.map(v => scenario === 'aggressive' ? v * 1.3 : scenario === 'conservative' ? v * 0.8 : v * 1.1)
+                ? anomaly.sparkline.map(v => (scenario === 'aggressive' ? v * 1.3 : scenario === 'conservative' ? v * 0.8 : v * 1.1) * assumptionMultiplier)
                 : anomaly.sparkline;
               
               return (
@@ -628,6 +686,71 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
               </div>
             )})}
           </div>
+
+          {/* Historical Market Variance Heatmap */}
+          <div className="mt-6 border-t border-slate-800/80 pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-mono font-bold text-slate-400 flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> 6-MONTH MARKET VARIANCE HEATMAP
+              </span>
+              {selectedHeatmapDate && (
+                <span className="text-[10px] font-mono text-cyan-400 bg-cyan-900/30 px-2 py-0.5 rounded border border-cyan-800/50">
+                  {selectedHeatmapDate} - Variance Detail
+                </span>
+              )}
+            </div>
+            <div className="flex gap-[2px] overflow-x-auto pb-2 scrollbar-none h-16 items-end">
+              {heatmapData.map((d, i) => (
+                <div 
+                  key={d.date} 
+                  title={`${d.date}: ${(d.intensity * 100).toFixed(1)}% variance`}
+                  onClick={() => setSelectedHeatmapDate(d.date)}
+                  className={`w-3 shrink-0 rounded-[1px] cursor-pointer hover:ring-1 hover:ring-white transition-all ${
+                    d.intensity > 0.8 ? 'bg-rose-500' : 
+                    d.intensity > 0.5 ? 'bg-amber-500' : 
+                    'bg-emerald-500/80'
+                  }`}
+                  style={{ height: `${Math.max(20, d.intensity * 100)}%` }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Notification Log */}
+          <AnimatePresence>
+            {isLogOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-2">
+                  <div className="text-xs font-mono font-bold text-slate-400 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> HIGH-SEVERITY ALERT ARCHIVE
+                  </div>
+                  {notificationLog.map(log => (
+                    <div key={log.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-900/50 border border-slate-800/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full ${log.severity === 'high' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                        <div>
+                          <div className="text-sm font-bold text-slate-200">{log.title}</div>
+                          <div className="text-[10px] font-mono text-slate-500">{log.time} • TTR: {log.duration}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {log.mitigated ? (
+                          <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">Resolved</span>
+                        ) : (
+                          <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-1 rounded border border-rose-500/20">Active</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Model Category Tabs */}
@@ -1053,6 +1176,30 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                       </ComposedChart>
                     </ResponsiveContainer>
                   </div>
+                  
+                  {/* Scatter Plot for Risk Factor vs Throughput */}
+                  <div className="mt-4 h-40 w-full border-b border-slate-800/50 pb-4">
+                    <div className="text-xs font-mono text-slate-400 mb-2">THROUGHPUT VS RISK INTENSITY (SCATTER)</div>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: -20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                        <XAxis type="number" dataKey="intensity" name="Intensity" stroke="#475569" fontSize={10} tickLine={false} axisLine={false} />
+                        <YAxis type="number" dataKey="throughput" name="Throughput" stroke="#475569" fontSize={10} tickLine={false} axisLine={false} />
+                        <ZAxis type="number" dataKey="z" range={[20, 100]} name="Impact" />
+                        <Tooltip 
+                          cursor={{ strokeDasharray: '3 3' }}
+                          contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', fontSize: '10px', fontFamily: 'monospace' }}
+                          itemStyle={{ color: '#e2e8f0' }}
+                        />
+                        <Scatter name="Correlation" data={Array.from({length: 30}).map((_, i) => ({
+                            intensity: (Math.random() * 50) + (activeAnomaly.severity === 'high' ? 50 : 20),
+                            throughput: 100 - (Math.random() * 40) - (activeAnomaly.severity === 'high' ? 40 : 10),
+                            z: Math.random() * 100
+                          }))} fill={activeAnomaly.severity === 'high' ? '#f43f5e' : activeAnomaly.severity === 'medium' ? '#f59e0b' : '#10b981'} fillOpacity={0.6} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+
                   <div className="text-[10px] font-mono text-slate-500 text-right mt-1">
                     {anomalyViewMode === 'projected' ? 'PROJECTED 30-DAY CORRELATION MODEL' : 'HISTORICAL 30-DAY CORRELATION MODEL'}
                   </div>
@@ -1078,12 +1225,30 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                         <span>{activeAnomaly.mitigation}</span>
                       </p>
                       <div className="h-px w-full bg-cyan-500/20 my-1" />
-                      <p className="font-semibold text-cyan-100">Automated Remediation Steps:</p>
-                      <ul className="list-disc pl-5 space-y-1 text-slate-400 text-xs">
-                        <li>Trigger proactive alerts to finance ops team.</li>
-                        <li>Recalculate subsequent quarter's baseline projections.</li>
-                        <li>Deploy targeted A/B tests for variance correction.</li>
-                      </ul>
+                      <p className="font-semibold text-cyan-100">Step-by-Step Resolution Flow:</p>
+                      <div className="relative pl-5 border-l-2 border-cyan-500/20 space-y-4 py-2 mt-2">
+                        <div className="relative">
+                          <div className="absolute -left-[27px] top-0 w-3 h-3 rounded-full bg-cyan-900 border-2 border-cyan-400"></div>
+                          <div className="text-xs text-cyan-300 font-bold mb-0.5 flex items-center gap-2">
+                            <Activity className="w-3 h-3" /> Detect & Alert
+                          </div>
+                          <div className="text-[11px] text-slate-400">Trigger proactive alerts to finance operations team via Slack & Email.</div>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute -left-[27px] top-0 w-3 h-3 rounded-full bg-cyan-900 border-2 border-cyan-500"></div>
+                          <div className="text-xs text-cyan-300 font-bold mb-0.5 flex items-center gap-2">
+                            <Calculator className="w-3 h-3" /> Recalibrate
+                          </div>
+                          <div className="text-[11px] text-slate-400">Recalculate subsequent quarter's baseline projections to absorb variance.</div>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute -left-[27px] top-0 w-3 h-3 rounded-full bg-cyan-900 border-2 border-cyan-600"></div>
+                          <div className="text-xs text-cyan-300 font-bold mb-0.5 flex items-center gap-2">
+                            <GitMerge className="w-3 h-3" /> A/B Testing
+                          </div>
+                          <div className="text-[11px] text-slate-400">Deploy targeted operational A/B tests for variance correction and margin recovery.</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
