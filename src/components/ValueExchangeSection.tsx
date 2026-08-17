@@ -111,6 +111,54 @@ export const ValueExchangeSection: React.FC = () => {
           d.fy = null;
         }));
 
+    const packets = g.append('g')
+      .selectAll('circle')
+      .data(links)
+      .enter().append('circle')
+      .attr('r', 3)
+      .attr('fill', '#38bdf8')
+      .style('filter', 'drop-shadow(0 0 5px #38bdf8)');
+
+    function animatePacket(selection: any) {
+      selection
+        .transition()
+        .duration((d: any) => 1500 + Math.random() * 1500)
+        .ease(d3.easeLinear)
+        .attrTween('cx', function(this: any, d: any) {
+          return function(t: number) {
+            const dx = d.target.x - d.source.x;
+            const dy = d.target.y - d.source.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            // target edge
+            const ratioTarget = (distance - d.target.radius) / distance;
+            // source edge
+            const ratioSource = d.source.radius / distance;
+            const startX = d.source.x + dx * ratioSource;
+            const endX = d.source.x + dx * ratioTarget;
+            return String(startX + (endX - startX) * t);
+          };
+        })
+        .attrTween('cy', function(this: any, d: any) {
+          return function(t: number) {
+            const dx = d.target.x - d.source.x;
+            const dy = d.target.y - d.source.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            // target edge
+            const ratioTarget = (distance - d.target.radius) / distance;
+            // source edge
+            const ratioSource = d.source.radius / distance;
+            const startY = d.source.y + dy * ratioSource;
+            const endY = d.source.y + dy * ratioTarget;
+            return String(startY + (endY - startY) * t);
+          };
+        })
+        .on('end', function(this: any) {
+          d3.select(this).call(animatePacket);
+        });
+    }
+
+    packets.call(animatePacket);
+
     node.append('circle')
       .attr('r', d => d.radius)
       .attr('fill', d => d.color)

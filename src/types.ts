@@ -1,3 +1,20 @@
+export interface FeedbackReply {
+  id: string;
+  text: string;
+  timestamp: string;
+}
+
+export type FeedbackPriority = 'Critical Inquiry' | 'Strategic Suggestion' | 'General Feedback';
+
+export interface FeedbackComment {
+  id: string;
+  text: string;
+  section: string;
+  timestamp: string;
+  replies?: FeedbackReply[];
+  priority?: FeedbackPriority;
+}
+
 export type Currency = 'USD' | 'BDT';
 
 export const USD_TO_BDT_RATE = 122.61;

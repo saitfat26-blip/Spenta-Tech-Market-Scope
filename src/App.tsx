@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Currency } from './types';
+import { Currency, FeedbackComment } from './types';
 import { Navbar } from './components/Navbar';
 import { SidebarDock } from './components/SidebarDock';
 import { HeroSection } from './components/HeroSection';
@@ -29,6 +29,10 @@ import { OmniSearchModal } from './components/OmniSearchModal';
 import { MilestonesSection } from './components/MilestonesSection';
 import { ValueExchangeSection } from './components/ValueExchangeSection';
 import { ExecutiveFeedbackDrawer } from './components/ExecutiveFeedbackDrawer';
+import { SectionMap } from './components/SectionMap';
+import { AnomalyWatchToast } from './components/AnomalyWatchToast';
+import { VoiceNavigator } from './components/VoiceNavigator';
+import { MessageSquare } from 'lucide-react';
 
 export type GlobalViewMode = 'investor' | 'partner';
 
@@ -45,6 +49,7 @@ export default function App() {
   const [activePersona, setActivePersona] = useState<InvestorPersona | null>(null);
   const [activeScenario, setActiveScenario] = useState<FinancialScenario>('base');
   const [contactInterestArea, setContactInterestArea] = useState<string>('Seed Round SAFE Allocation ($500k @ $4.5M Cap)');
+  const [comments, setComments] = useState<FeedbackComment[]>([]);
 
   // Deep linking: Detect ?section=xxx or #xxx in URL on load and scroll into view
   useEffect(() => {
@@ -81,6 +86,24 @@ export default function App() {
       document.removeEventListener('open-omni-search', handleOpenOmniSearch);
     };
   }, []);
+
+  const getCommentCount = (sectionName: string) => comments.filter(c => c.section === sectionName).length;
+
+  const SectionMarker = ({ count, onClick }: { count: number, onClick: () => void }) => {
+    if (count === 0) return null;
+    return (
+      <div 
+        className="absolute top-10 right-10 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border border-cyan-500/50 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] cursor-pointer hover:scale-110 hover:bg-slate-800 transition-all"
+        onClick={onClick}
+        title="View Feedback for this section"
+      >
+        <MessageSquare className="w-5 h-5" />
+        <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-slate-900 shadow-md">
+          {count}
+        </span>
+      </div>
+    );
+  };
 
   // Global Keyboard Shortcuts for Section Navigation
   useEffect(() => {
@@ -182,16 +205,25 @@ export default function App() {
         <InvestorNewsTicker />
 
         {/* 2. Synergistic Commercial Portfolios: The Dual Engines */}
-        <DualEngineSection />
+        <div className="relative">
+          <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+          <DualEngineSection />
+        </div>
 
         {/* 3. 6-Layer Fusion Architecture Deep Dive */}
-        <FusionStackSection />
+        <div className="relative">
+          <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+          <FusionStackSection />
+        </div>
 
         {/* 4. R&D Technology Development Timeline & Gantt Roadmap */}
         <RdRoadmapSection />
 
         {/* Major Milestones & Strategic Sprints */}
-        <MilestonesSection />
+        <div className="relative">
+          <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+          <MilestonesSection />
+        </div>
 
         {/* Value Exchange Model */}
         <ValueExchangeSection />
@@ -203,10 +235,13 @@ export default function App() {
         <CaseStudiesSection currency={currency} />
 
         {/* 7. Recalibrated 9-Tier Unit Economics (USD & BDT Waterfall) with Financial Scenarios */}
-        <UnitEconomicsSection 
-          currency={currency} 
-          onOpenIntelligenceDashboard={handleOpenIntelligence}
-        />
+        <div className="relative">
+          <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+          <UnitEconomicsSection 
+            currency={currency} 
+            onOpenIntelligenceDashboard={handleOpenIntelligence}
+          />
+        </div>
 
         {/* 8. Interactive Holographic Dual-Shore Globe (San Jose ↔ Dhaka) */}
         <DualShoreGlobeSection onOpenContact={handleOpenContact} />
@@ -297,7 +332,13 @@ export default function App() {
       <ExecutiveFeedbackDrawer
         isOpen={isFeedbackDrawerOpen}
         onClose={() => setIsFeedbackDrawerOpen(false)}
+        comments={comments}
+        setComments={setComments}
       />
+      
+      <SectionMap />
+      <AnomalyWatchToast />
+      <VoiceNavigator />
     </div>
   );
 }
