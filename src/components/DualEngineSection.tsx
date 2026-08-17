@@ -104,6 +104,44 @@ const FLOATING_DATA_NODES: FloatingDataNode[] = [
   }
 ];
 
+const MouseParticles: React.FC<{ color: string }> = ({ color }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const particle = document.createElement('div');
+    particle.className = 'absolute rounded-full pointer-events-none mix-blend-screen';
+    particle.style.width = '3px';
+    particle.style.height = '3px';
+    particle.style.backgroundColor = color;
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    particle.style.boxShadow = `0 0 8px ${color}, 0 0 12px ${color}`;
+    
+    particle.animate([
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 0.9 },
+      { transform: `translate(-50%, -50%) translate(${(Math.random()-0.5)*60}px, ${(Math.random()-0.5)*60}px) scale(0)`, opacity: 0 }
+    ], {
+      duration: 500 + Math.random() * 400,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+    }).onfinish = () => particle.remove();
+
+    containerRef.current.appendChild(particle);
+  };
+
+  return (
+    <div 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="absolute inset-0 z-0 overflow-hidden rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
+    />
+  );
+};
+
 export const DualEngineSection: React.FC = () => {
   const [selectedEngine, setSelectedEngine] = useState<'experience' | 'operations'>('experience');
   const [activeCapabilityIndex, setActiveCapabilityIndex] = useState<number>(0);
@@ -439,7 +477,7 @@ export const DualEngineSection: React.FC = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-40px" }}
-            className="lg:col-span-5 space-y-3.5"
+            className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5"
           >
             {currentList.map((item, idx) => {
               const isSelected = activeCapabilityIndex === idx;
@@ -448,15 +486,25 @@ export const DualEngineSection: React.FC = () => {
                 <div
                   key={item.title}
                   onClick={() => setActiveCapabilityIndex(idx)}
-                  className={`service-card-3d p-4 rounded-xl cursor-pointer transition-all border ${
+                  className={`service-card-3d p-4 rounded-xl cursor-pointer transition-all border group relative ${
                     isSelected
                       ? selectedEngine === 'experience'
-                        ? 'border-cyan-400/90 shadow-xl shadow-cyan-500/15 bg-slate-900/95 ring-1 ring-cyan-400/40'
-                        : 'border-emerald-400/90 shadow-xl shadow-emerald-500/15 bg-slate-900/95 ring-1 ring-emerald-400/40'
+                        ? 'border-cyan-400/90 shadow-lg shadow-cyan-500/20 bg-slate-900/95 ring-1 ring-cyan-400/40'
+                        : 'border-emerald-400/90 shadow-lg shadow-emerald-500/20 bg-slate-900/95 ring-1 ring-emerald-400/40'
                       : 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900/80'
                   }`}
                 >
-                  <div className="flex items-start gap-3.5">
+                  <MouseParticles color={item.color} />
+                  
+                  {/* Interactive Executive Tooltip on Hover */}
+                  <div className="absolute left-1/2 -translate-x-1/2 -top-12 w-11/12 max-w-[280px] bg-slate-800/95 backdrop-blur-xl border border-slate-700 p-2.5 rounded-lg shadow-2xl z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none transform -translate-y-2 group-hover:translate-y-0">
+                    <div className="text-[9px] font-mono font-bold text-slate-400 mb-1 uppercase tracking-wider">Dual-Engine Impact</div>
+                    <div className="text-[10px] text-slate-200 leading-snug line-clamp-2">{item.desc}</div>
+                    {/* Tooltip Arrow */}
+                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-800/95 border-b border-r border-slate-700 rotate-45" />
+                  </div>
+
+                  <div className="flex items-start gap-3.5 relative z-10">
                     {/* Staggered Entrance Service Icon with Spring Animation */}
                     <motion.div 
                       variants={iconPopVariants}
@@ -472,14 +520,22 @@ export const DualEngineSection: React.FC = () => {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 font-medium">
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 font-medium truncate">
                           {item.tag}
                         </span>
-                        <span className={`text-xs font-mono font-bold ${selectedEngine === 'experience' ? 'text-cyan-400' : 'text-emerald-400'}`}>
-                          {item.margin}
-                        </span>
+                        
+                        {isSelected ? (
+                          <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-950/80 border font-bold flex items-center gap-1 shrink-0 ${selectedEngine === 'experience' ? 'text-cyan-400 border-cyan-500/50' : 'text-emerald-400 border-emerald-500/50'}`}>
+                            <Activity className="w-3 h-3" />
+                            DEEP DIVE
+                          </span>
+                        ) : (
+                          <span className={`text-[11px] font-mono font-bold shrink-0 ${selectedEngine === 'experience' ? 'text-cyan-500/80' : 'text-emerald-500/80'}`}>
+                            {item.margin}
+                          </span>
+                        )}
                       </div>
-                      <h3 className="font-heading font-bold text-base text-white">{item.title}</h3>
+                      <h3 className="font-heading font-bold text-[15px] sm:text-base text-white leading-tight mb-0.5">{item.title}</h3>
                       <p className="text-xs text-slate-400 mt-1 line-clamp-1">{item.client}</p>
                     </div>
                   </div>

@@ -24,6 +24,8 @@ import { OnboardingWizardModal, InvestorPersona } from './components/OnboardingW
 import { ActiveTrackIndicator } from './components/ActiveTrackIndicator';
 import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { GlobalLoadingScreen } from './components/GlobalLoadingScreen';
+import { BreadcrumbNav } from './components/BreadcrumbNav';
+import { OmniSearchModal } from './components/OmniSearchModal';
 
 export default function App() {
   const [currency, setCurrency] = useState<Currency>('USD');
@@ -32,6 +34,7 @@ export default function App() {
   const [isContactOpen, setIsContactOpen] = useState<boolean>(false);
   const [isIntelligenceOpen, setIsIntelligenceOpen] = useState<boolean>(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
+  const [isOmniSearchOpen, setIsOmniSearchOpen] = useState<boolean>(false);
   const [activePersona, setActivePersona] = useState<InvestorPersona | null>(null);
   const [activeScenario, setActiveScenario] = useState<FinancialScenario>('base');
   const [contactInterestArea, setContactInterestArea] = useState<string>('Seed Round SAFE Allocation ($500k @ $4.5M Cap)');
@@ -62,7 +65,51 @@ export default function App() {
 
     handleDeepLink();
     window.addEventListener('popstate', handleDeepLink);
-    return () => window.removeEventListener('popstate', handleDeepLink);
+
+    const handleOpenOmniSearch = () => setIsOmniSearchOpen(true);
+    document.addEventListener('open-omni-search', handleOpenOmniSearch);
+
+    return () => {
+      window.removeEventListener('popstate', handleDeepLink);
+      document.removeEventListener('open-omni-search', handleOpenOmniSearch);
+    };
+  }, []);
+
+  // Global Keyboard Shortcuts for Section Navigation
+  useEffect(() => {
+    const sectionMap: Record<string, string> = {
+      '1': 'hero',
+      '2': 'dual-engines',
+      '3': 'fusion-stack',
+      '4': 'rd-roadmap',
+      '5': 'case-studies',
+      '6': 'unit-economics',
+      '7': 'dual-shore-globe',
+      '8': 'executive-team',
+      '9': 'investment-terms',
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input or textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      const targetId = sectionMap[e.key];
+      if (targetId) {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          el.classList.add('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]', 'transition-all', 'duration-1000');
+          setTimeout(() => {
+            el.classList.remove('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]');
+          }, 3000);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleOpenContact = (interestArea?: string) => {
@@ -87,6 +134,9 @@ export default function App() {
 
       {/* Global Loading Screen Sequence on initial load */}
       <GlobalLoadingScreen />
+
+      {/* Sticky Breadcrumb Navigation */}
+      <BreadcrumbNav />
 
       {/* Top Navbar */}
       <Navbar
@@ -218,6 +268,12 @@ export default function App() {
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
         onSelectPersona={(persona) => setActivePersona(persona)}
+      />
+
+      {/* Global Omni-Search Modal */}
+      <OmniSearchModal
+        isOpen={isOmniSearchOpen}
+        onClose={() => setIsOmniSearchOpen(false)}
       />
 
     </div>
