@@ -336,7 +336,7 @@ export default function App() {
         setComments={setComments}
       />
       
-      <SectionMap />
+      <SectionMap comments={comments} />
       <AnomalyWatchToast />
       <VoiceNavigator />
     </div>
