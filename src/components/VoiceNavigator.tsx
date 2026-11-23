@@ -90,7 +90,7 @@ export const VoiceNavigator: React.FC = () => {
     }
   };
 
-  if (!window.SpeechRecognition && !(window as any).webkitSpeechRecognition) {
+  if (!(window as any).SpeechRecognition && !(window as any).webkitSpeechRecognition) {
     return null;
   }
 

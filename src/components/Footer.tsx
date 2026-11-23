@@ -118,7 +118,7 @@ export const Footer: React.FC<FooterProps> = ({
 
               {onOpenContact && (
                 <button
-                  onClick={onOpenContact}
+                  onClick={() => onOpenContact()}
                   className="px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Mail className="w-3.5 h-3.5" />

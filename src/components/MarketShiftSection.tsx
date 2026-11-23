@@ -110,7 +110,7 @@ export const MarketShiftSection: React.FC = () => {
               <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
               <span>MACRO ECOSYSTEM CATALYST // WHY NOW?</span>
             </div>
-            <CopyShareButton sectionId="market-shift" label="Share Macro" />
+            <CopyShareButton sectionId="market-shift" sectionTitle="Share Macro" />
             <button
               onClick={() => setIsMacroOverlayOpen(true)}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-xs font-mono text-cyan-300 hover:bg-cyan-900/80 transition-all cursor-pointer shadow-sm"

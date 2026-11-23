@@ -264,7 +264,7 @@ export const DualEngineSection: React.FC = () => {
       scale: 1, 
       rotate: 0,
       transition: { 
-        type: 'spring', 
+        type: 'spring' as const, 
         stiffness: 320, 
         damping: 18 
       } 

@@ -32,6 +32,8 @@ import { ExecutiveFeedbackDrawer } from './components/ExecutiveFeedbackDrawer';
 import { SectionMap } from './components/SectionMap';
 import { AnomalyWatchToast } from './components/AnomalyWatchToast';
 import { VoiceNavigator } from './components/VoiceNavigator';
+import { Diagnovax3DAnalyticsSection } from './components/Diagnovax3DAnalyticsSection';
+import { PresentationSlideWrapper } from './components/PresentationSlideWrapper';
 import { MessageSquare } from 'lucide-react';
 
 export type GlobalViewMode = 'investor' | 'partner';
@@ -189,79 +191,116 @@ export default function App() {
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
       />
 
-      {/* Main Single-Page Scroll Content */}
+      {/* Main Single-Page Scroll Content with PPTX-Inspired Presentation Transitions */}
       <main id="main-content">
         
-        {/* 1. Hero & Executive Briefing */}
-        <HeroSection
-          currency={currency}
-          onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
-          onOpenDataRoom={() => setIsDataRoomOpen(true)}
-          onOpenContact={handleOpenContact}
-          globalViewMode={globalViewMode}
-        />
+        {/* Slide 01. Hero & Executive Briefing */}
+        <PresentationSlideWrapper slideNumber={1} totalSlides={15} slideTitle="Executive Briefing" variant="morph">
+          <HeroSection
+            currency={currency}
+            onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
+            onOpenDataRoom={() => setIsDataRoomOpen(true)}
+            onOpenContact={handleOpenContact}
+            globalViewMode={globalViewMode}
+          />
+        </PresentationSlideWrapper>
 
         {/* Real-Time Investor News Ticker */}
         <InvestorNewsTicker />
 
-        {/* 2. Synergistic Commercial Portfolios: The Dual Engines */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <DualEngineSection />
-        </div>
+        {/* Slide 02. Synergistic Commercial Portfolios: The Dual Engines */}
+        <PresentationSlideWrapper slideNumber={2} totalSlides={15} slideTitle="Dual Engines" variant="push-up">
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <DualEngineSection />
+          </div>
+        </PresentationSlideWrapper>
 
-        {/* 3. 6-Layer Fusion Architecture Deep Dive */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <FusionStackSection />
-        </div>
+        {/* Slide 03. 6-Layer Fusion Architecture Deep Dive */}
+        <PresentationSlideWrapper slideNumber={3} totalSlides={15} slideTitle="6-Layer Fusion Stack" variant="depth-zoom">
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <FusionStackSection />
+          </div>
+        </PresentationSlideWrapper>
 
-        {/* 4. R&D Technology Development Timeline & Gantt Roadmap */}
-        <RdRoadmapSection />
+        {/* Slide 04. R&D Technology Development Timeline & Gantt Roadmap */}
+        <PresentationSlideWrapper slideNumber={4} totalSlides={15} slideTitle="R&D Roadmap" variant="curtain-wipe">
+          <RdRoadmapSection />
+        </PresentationSlideWrapper>
 
-        {/* Major Milestones & Strategic Sprints */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <MilestonesSection />
-        </div>
+        {/* Slide 05. Major Milestones & Strategic Sprints */}
+        <PresentationSlideWrapper slideNumber={5} totalSlides={15} slideTitle="Strategic Milestones" variant="morph">
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <MilestonesSection />
+          </div>
+        </PresentationSlideWrapper>
 
-        {/* Value Exchange Model */}
-        <ValueExchangeSection />
+        {/* Slide 06. Value Exchange Model */}
+        <PresentationSlideWrapper slideNumber={6} totalSlides={15} slideTitle="Value Exchange" variant="perspective-tilt">
+          <ValueExchangeSection />
+        </PresentationSlideWrapper>
 
-        {/* 5. Macro Catalyst: Big Tech Hardware Influx */}
-        <MarketShiftSection />
+        {/* Slide 07. Macro Catalyst: Big Tech Hardware Influx */}
+        <PresentationSlideWrapper slideNumber={7} totalSlides={15} slideTitle="Market Shift" variant="push-up">
+          <MarketShiftSection />
+        </PresentationSlideWrapper>
 
-        {/* 6. Verified Case Studies & Interactive ROI Calculator */}
-        <CaseStudiesSection currency={currency} />
+        {/* Slide 08. Verified Case Studies & Interactive ROI Calculator */}
+        <PresentationSlideWrapper slideNumber={8} totalSlides={15} slideTitle="Verified Case Studies" variant="curtain-wipe">
+          <CaseStudiesSection currency={currency} />
+        </PresentationSlideWrapper>
 
-        {/* 7. Recalibrated 9-Tier Unit Economics (USD & BDT Waterfall) with Financial Scenarios */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <UnitEconomicsSection 
-            currency={currency} 
-            onOpenIntelligenceDashboard={handleOpenIntelligence}
+        {/* Slide 09. Recalibrated 9-Tier Unit Economics (USD & BDT Waterfall) with Financial Scenarios */}
+        <PresentationSlideWrapper slideNumber={9} totalSlides={15} slideTitle="Unit Economics" variant="morph">
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <UnitEconomicsSection 
+              currency={currency} 
+              onOpenIntelligenceDashboard={handleOpenIntelligence}
+            />
+          </div>
+        </PresentationSlideWrapper>
+
+        {/* Slide 10. Interactive Diagnovax 3D Data Visualizations (React Three Fiber) */}
+        <PresentationSlideWrapper slideNumber={10} totalSlides={15} slideTitle="3D Spatial Observatory" variant="depth-zoom">
+          <Diagnovax3DAnalyticsSection
+            currency={currency}
+            scenario={activeScenario}
+            onScenarioChange={setActiveScenario}
           />
-        </div>
+        </PresentationSlideWrapper>
 
-        {/* 8. Interactive Holographic Dual-Shore Globe (San Jose ↔ Dhaka) */}
-        <DualShoreGlobeSection onOpenContact={handleOpenContact} />
+        {/* Slide 11. Interactive Holographic Dual-Shore Globe (San Jose ↔ Dhaka) */}
+        <PresentationSlideWrapper slideNumber={11} totalSlides={15} slideTitle="Global Operations" variant="perspective-tilt">
+          <DualShoreGlobeSection onOpenContact={handleOpenContact} />
+        </PresentationSlideWrapper>
 
-        {/* 9. Executive Leadership & Founding Team */}
-        <ExecutiveTeamSection onOpenContact={handleOpenContact} />
+        {/* Slide 12. Executive Leadership & Founding Team */}
+        <PresentationSlideWrapper slideNumber={12} totalSlides={15} slideTitle="Executive Leadership" variant="push-up">
+          <ExecutiveTeamSection onOpenContact={handleOpenContact} />
+        </PresentationSlideWrapper>
 
-        {/* 10. Non-Client, Passive & Creator Commerce Streams */}
-        <PassiveIPSection currency={currency} />
+        {/* Slide 13. Non-Client, Passive & Creator Commerce Streams */}
+        <PresentationSlideWrapper slideNumber={13} totalSlides={15} slideTitle="Passive IP Streams" variant="curtain-wipe">
+          <PassiveIPSection currency={currency} />
+        </PresentationSlideWrapper>
 
-        {/* 11. Real-World Benchmarks & Competitive Moat Matrix */}
-        <MoatAndBenchmarksSection />
+        {/* Slide 14. Real-World Benchmarks & Competitive Moat Matrix */}
+        <PresentationSlideWrapper slideNumber={14} totalSlides={15} slideTitle="Competitive Moats" variant="morph">
+          <MoatAndBenchmarksSection />
+        </PresentationSlideWrapper>
 
-        {/* 12. Seed Round SAFE Terms, Capital Allocation & Milestones */}
-        <InvestmentTermsSection
-          currency={currency}
-          onOpenDataRoom={() => setIsDataRoomOpen(true)}
-          onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
-          onOpenContact={handleOpenContact}
-        />
+        {/* Slide 15. Seed Round SAFE Terms, Capital Allocation & Milestones */}
+        <PresentationSlideWrapper slideNumber={15} totalSlides={15} slideTitle="Investment Terms" variant="depth-zoom">
+          <InvestmentTermsSection
+            currency={currency}
+            onOpenDataRoom={() => setIsDataRoomOpen(true)}
+            onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
+            onOpenContact={handleOpenContact}
+          />
+        </PresentationSlideWrapper>
 
       </main>
 
